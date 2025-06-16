@@ -1,0 +1,137 @@
+Great! Since you said “Yes please,” I’ll start with a simple guide and example to help you build a Visual Studio extension that offers custom IntelliSense/code completion suggestions, which is the closest practical way to script or extend IntelliCode-like behavior.
+
+
+---
+
+How to Build a Custom IntelliSense (Code Completion) Extension for Visual Studio 2022
+
+Visual Studio IntelliCode itself doesn’t expose scripting interfaces, but you can create your own code completion providers using Visual Studio’s Roslyn APIs.
+
+Overview Steps:
+
+1. Set up your development environment for Visual Studio extensions.
+
+
+2. Create a new VSIX Project in Visual Studio.
+
+
+3. Add a Roslyn Completion Provider class.
+
+
+4. Implement the logic to provide custom completion items.
+
+
+5. Build and test your extension inside an experimental instance of Visual Studio.
+
+
+
+
+---
+
+Step 1: Set Up
+
+Install Visual Studio 2022 with the Visual Studio extension development workload.
+
+Optional but recommended: Install the Visual Studio SDK.
+
+
+
+---
+
+Step 2: Create a VSIX Project
+
+Open Visual Studio 2022.
+
+Create a new project.
+
+Search for VSIX Project.
+
+Name it something like CustomCompletionProvider.
+
+
+
+---
+
+Step 3: Add a Completion Provider
+
+Add a new class file, e.g., MyCompletionProvider.cs.
+
+Here’s a minimal example of a Completion Provider that suggests "HelloWorld" as a completion item:
+
+using System.Collections.Immutable;
+using System.Composition;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Completion;
+using Microsoft.CodeAnalysis.Text;
+
+[ExportCompletionProvider(nameof(MyCompletionProvider), LanguageNames.CSharp)]
+[Shared]
+public class MyCompletionProvider : CompletionProvider
+{
+    public override async Task ProvideCompletionsAsync(CompletionContext context)
+    {
+        // Add "HelloWorld" as a completion suggestion
+        var completionItem = CompletionItem.Create("HelloWorld");
+        context.AddItem(completionItem);
+    }
+
+    public override bool ShouldTriggerCompletion(SourceText text, int position, CompletionTrigger trigger, 
+                                                 OptionSet options)
+    {
+        // Trigger completion whenever a dot '.' is typed
+        if (trigger.Kind == CompletionTriggerKind.Insertion && position > 0)
+        {
+            var ch = text[position - 1];
+            return ch == '.';
+        }
+        return false;
+    }
+}
+
+
+---
+
+Step 4: Build and Run
+
+Build the project.
+
+Press F5 to launch the Experimental Instance of Visual Studio.
+
+Open a C# file, and type . to trigger the completion.
+
+You should see "HelloWorld" in the IntelliSense suggestion list.
+
+
+
+---
+
+Notes
+
+This is a very basic example.
+
+You can customize ProvideCompletionsAsync to provide suggestions based on context, syntax tree, or even external AI models.
+
+You can combine this with other APIs for more powerful tooling.
+
+
+
+---
+
+Extra Resources
+
+Visual Studio Extensibility Documentation
+
+Roslyn Completion Providers Walkthrough
+
+Create a C# Completion Provider (Tutorial)
+
+
+
+---
+
+If you want, I can help generate a full sample VSIX project, or help you script or extend it further (e.g., pull completions from your own dataset or AI model).
+
+Would you like me to do that?
+
